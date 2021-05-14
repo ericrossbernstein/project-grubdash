@@ -20,7 +20,7 @@ function orderExists(req, res, next) {
   });
 }
 
-function create(req, res, next) {
+function create(req, res) {
   const { data: { deliverTo, mobileNumber, dishes } = {} } = req.body;
   const newOrder = {
     id: nextId(),
@@ -39,8 +39,7 @@ function destroy(req, res, next) {
       message: `An order cannot be deleted unless it is pending`,
     });
   }
-  const { orderId } = req.params;
-  const index = orders.findIndex((order) => order.id === orderId);
+  const index = orders.findIndex((order) => order === res.locals.order);
   const deletedOrder = orders.splice(index, 1);
 
   res.sendStatus(204);
@@ -50,7 +49,7 @@ function list(req, res) {
   res.json({ data: orders });
 }
 
-function read(req, res, next) {
+function read(req, res) {
   res.json({ data: res.locals.order });
 }
 
@@ -140,7 +139,7 @@ function idMatches(req, res, next) {
   next();
 }
 
-function update(req, res, next) {
+function update(req, res) {
   const { orderId } = req.params;
   const { data: { deliverTo, mobileNumber, status, dishes } = {} } = req.body;
   const updatedOrder = {
@@ -150,7 +149,7 @@ function update(req, res, next) {
     status,
     dishes,
   };
-  const originalOrder = orders.find((order) => order.id === orderId);
+  const originalOrder = res.locals.order;
   orders[originalOrder] = updatedOrder;
   res.status(200).json({ data: updatedOrder });
 }

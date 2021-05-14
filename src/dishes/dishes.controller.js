@@ -20,7 +20,7 @@ function dishExists(req, res, next) {
   });
 }
 
-function create(req, res, next) {
+function create(req, res) {
   const { data: { name, description, price, image_url } = {} } = req.body;
   const newDish = {
     id: nextId(),
@@ -104,7 +104,7 @@ function idMatches(req, res, next) {
   next();
 }
 
-function update(req, res, next) {
+function update(req, res) {
   const { dishId } = req.params;
   const { data: { name, description, price, image_url } = {} } = req.body;
   const updatedDish = {
@@ -114,10 +114,9 @@ function update(req, res, next) {
     price,
     image_url,
   };
-  const originalDish = dishes.filter((dish) => dish.id === dishId);
+  const originalDish = res.locals.dish;
   dishes[originalDish] = updatedDish;
   res.json({ data: updatedDish });
-  next();
 }
 
 module.exports = {
